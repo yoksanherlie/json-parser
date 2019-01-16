@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Final Project (JSON Parser)</title>
+
+	<link rel="stylesheet" href="reset.css">
+	<link rel="stylesheet" href="jsonTree.css">
+	<link rel="stylesheet" href="main.css">
+	<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
+</head>
+<body>
+
+	<header>
+		<h1>
+			jsonParser
+		</h1>
+	</header>
+
+	<section class="content">
+		<div id="main">
+			<div id="source">
+				<div class="header-container">
+					<h2>Source</h2>
+
+					<button id="load_from_url">
+						Load from URL
+					</button>
+				</div>
+				<textarea id="source_text"></textarea>
+			</div>
+
+			<div id="wrapper-container">
+				<div class="header-container">
+					<h2>Result</h2>
+				</div>
+
+				<div id="wrapper"></div>
+			</div>
+		</div>
+	</section>
+
+	<div class="modal" id="modal_url">
+		<div class="container-modal">
+			<div class="form-group">
+				<label class="control-label">
+					URL:
+				</label>
+
+				<input type="text" name="load_url" id="load_url">
+			</div>
+			<button id="load_url_button">
+				Load
+			</button>
+		</div>
+	</div>
+
+	<script src="jsonTree.js"></script>
+	<script src="enum.js"></script>
+	<script src="JSONLexer.js"></script>
+	<script src="JSONParser.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>
