@@ -13,7 +13,10 @@ class JSONParser {
 
 	error(message) {
 		this.setToken();
-		throw new Error(`Parsing error: ${message ? message : 'Not a valid JSON'}`);
+		let msg = `Parsing error: ${message ? message : 'Not a valid JSON'}`;
+
+		showErrorModal(msg);
+		throw new Error(msg);
 	}
 
 	parse(lexerData) {
@@ -36,18 +39,18 @@ class JSONParser {
 	value() {
 		this.setToken();
 
-		if (this.token.type == TOKEN_TYPE.SYMBOL) {
+		if (this.token && this.token.type == TOKEN_TYPE.SYMBOL) {
 			switch (this.token.value) {
 				case '{':
 					return this.getObject();
 				case '[':
 					return this.getArray();
 			}
-		} else if (this.token.type == TOKEN_TYPE.STRING || this.token.type == TOKEN_TYPE.OTHER) {
+		} else if (this.token && (this.token.type == TOKEN_TYPE.STRING || this.token.type == TOKEN_TYPE.OTHER)) {
 			return this.token.value;
-		} else if (this.token.type == TOKEN_TYPE.NUMBER) {
+		} else if (this.token && this.token.type == TOKEN_TYPE.NUMBER) {
 			return parseInt(this.token.value);			
-		} else if (this.token.type == TOKEN_TYPE.LITERAL) {
+		} else if (this.token && this.token.type == TOKEN_TYPE.LITERAL) {
 			switch (this.token.value) {
 				case 'true':
 					return true;
@@ -70,6 +73,8 @@ class JSONParser {
 			// key of an object
 			this.setToken();
 
+			console.log(this.token);
+
 			if (this.token.type == TOKEN_TYPE.STRING) {
 				key = this.token.value;
 				this.index++;
@@ -77,13 +82,13 @@ class JSONParser {
 				if (this.token.type == TOKEN_TYPE.SYMBOL && this.token.value == '}') {
 					this.error(`Unexpected token "${this.data[this.index - 1].value}"`);
 				}
-				this.error(`Key of an object must be a string`);
+				this.error(`Key of an property must be a string`);
 			}
 
 			this.setToken();
 			// ":" of an object (delimeter) after key
-			if (this.token.type != TOKEN_TYPE.SYMBOL && this.token.value != ':') {
-				this.error(`Expected ":" after property on object`);
+			if (!this.token || (this.token.type != TOKEN_TYPE.SYMBOL && this.token.value != ':')) {
+				this.error(`Expected ":" after key on property`);
 			}
 
 			// value of the object
@@ -94,6 +99,23 @@ class JSONParser {
 			this.setToken();
 			if (this.token.type == TOKEN_TYPE.SYMBOL && this.token.value == '}') {
 				return obj;
+			}
+		} while (this.token.type == TOKEN_TYPE.SYMBOL && this.token.value == ',' && this.index++);
+	}
+
+	getArray() {
+		let arr = [];
+		if (this.token.value !== '[') return this.error(`Not a valid array at ${this.index}`);
+		if (this.data[++this.index].value == ']') return arr; // empty array
+
+		do {
+			this.setToken();
+
+			arr.push(this.value());
+
+			this.index++; this.setToken();
+			if (!this.token || (this.token.type == TOKEN_TYPE.SYMBOL && this.token.value == ']')) {
+				return arr;
 			}
 		} while (this.token.type == TOKEN_TYPE.SYMBOL && this.token.value == ',' && this.index++);
 	}

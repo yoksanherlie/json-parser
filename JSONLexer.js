@@ -23,7 +23,10 @@ class JSONLexer {
 	}
 
 	error(message) {
-		throw new Error(`Lexical analysis error: ${message}`);
+		let msg = `Lexical analysis error: ${message}`;
+
+		showErrorModal(msg);
+		throw new Error(msg);
 	}
 
 	lex(jsonSource) {
